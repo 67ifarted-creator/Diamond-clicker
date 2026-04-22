@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diamond Clicker</title>
-    <script>
-        // Actual game JavaScript code goes here.
-        // Please replace this comment with the actual game code.
-    <\/script>
+    <title>Diamond Clicker Game</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #game { text-align: center; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Diamond Clicker!</h1>
-    <p>Click the diamond to earn points!</p>
-    <button id="diamond">💎</button>
-    <script>
-        const diamondButton = document.getElementById('diamond');
-        let score = 0;
+    <div id="game">
+        <h1>Diamond Clicker</h1>
+        <p id="score">Score: 0</p>
+        <button id="clickButton">Click Me!</button>
+        <script>
+            let score = 0;
+            const scoreDisplay = document.getElementById('score');
+            const clickButton = document.getElementById('clickButton');
 
-        diamondButton.addEventListener('click', () => {
-            score++;
-            alert('Score: ' + score);
-        });
-    <\/script>
+            clickButton.addEventListener('click', () => {
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+            });
+        </script>
+    </div>
 </body>
 </html>

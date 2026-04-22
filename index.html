@@ -3,38 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diamond Clicker</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Diamond Clicker Game</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #diamond {
+            font-size: 220px;
+            display: block;
+            margin: 20px auto;
+            cursor: pointer;
+        }
+        #profile, #game {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Diamond Clicker!</h1>
-    <div id="game">
-        <div id="leaderboard">
-            <h2>Leaderboard</h2>
-            <ul>
-                <li>Player 1: 100 Diamonds</li>
-                <li>Player 2: 90 Diamonds</li>
-            </ul>
-        </div>
-        <div id="buildings">
-            <h2>Buildings</h2>
-            <button onclick="buyBuilding('Mine')">Buy Mine (Cost: 50 Diamonds)</button>
-            <button onclick="buyBuilding('Factory')">Buy Factory (Cost: 100 Diamonds)</button>
-        </div>
-        <div id="upgrades">
-            <h2>Upgrades</h2>
-            <button onclick="purchaseUpgrade('Speed')">Upgrade Click Speed (Cost: 20 Diamonds)</button>
-        </div>
-        <div id="achievements">
-            <h2>Achievements</h2>
-            <p>10 Clicks: <span id="clickAchievement">Unlocked</span></p>
-        </div>
-        <div id="chat">
-            <h2>Chat</h2>
-            <input type="text" id="chatInput" placeholder="Type your message..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
+    <div id="profile">
+        <h1>Create Profile</h1>
+        <input type="text" id="username" placeholder="Enter username" required>
+        <select id="classSelect">
+            <option value="Miner">Miner</option>
+            <option value="Driller">Driller</option>
+        </select>
+        <button onclick="createProfile()">Create Profile</button>
     </div>
-    <script src="script.js"></script>
-</body>
-</html>
+
+    <div id="game">
+        <h1>Diamond Clicker Game</h1>
+        <div id="diamond" onclick="collectDiamond()">💎</div>
+        <p>Diamonds: <span id="diamondCount">0</span></p>
+        <button onclick="upgrade()">Upgrade</button>
+    </div>
+
+    <script>
+        let diamonds = 0;
+        function createProfile() {
+            let username = document.getElementById('username').value;
+            let characterClass = document.getElementById('classSelect').value;
+            if (username) {
+                document.getElementById('profile').style.display = 'none';
+                document.getElementById('game').style.display = 'block';
+                alert(`Welcome ${username}, your character class is ${characterClass}!`);
+            }
+        }
+        function collectDiamond() {
+            diamonds++;
+            document.getElementById('diamondCount').innerText = diamonds;
+        }
+        function upgrade() {
+            alert("Upgrades feature coming soon!");
+        }
+        // Initial display
+        document.getElementById('profile').style.display = 'block';
+    </script>

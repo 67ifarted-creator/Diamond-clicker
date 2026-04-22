@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Clicker - Incremental Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 3fr 1.5fr 1.2fr;
+            gap: 20px;
+            max-width: 1600px;
+            width: 100%;
+        }
+
+        .game-section {
+            background: rgba(20, 20, 40, 0.8);
+            border: 2px solid #4a90e2;
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .leaderboard-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-card {
+            background: rgba(20, 20, 40, 0.8);
+            border: 2px solid #4a90e2;
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .leaderboard-card {
+            background: rgba(20, 20, 40, 0.8);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-card {
+            background: rgba(20, 20, 40, 0.8);
+            border: 2px solid #4ade80;
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #64b5f6;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+        }
+
+        h2 {
+            color: #64b5f6;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            border-bottom: 2px solid #4a90e2;
+            padding-bottom: 10px;
+        }
+
+        .leaderboard-card h2 {
+            border-bottom-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .chat-card h2 {
+            border-bottom-color: #4ade80;
+            color: #4ade80;
+        }
+
+        h3 {
+            color: #90caf9;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box {
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid #4a90e2;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #90caf9;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            color: #64b5f6;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .clicker-area {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .diamond-button {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 50%, #1e3a5f 100%);
+            border: 8px solid #90caf9;
+            font-size: 4em;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 0 30px rgba(74, 144, 226, 0.6), inset -3px -3px 8px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diamond-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 50px rgba(100, 181, 246, 0.8), inset -3px -3px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .diamond-button:active {
+            transform: scale(0.95);
+        }
+
+        .click-effect {
+            position: fixed;
+            font-size: 2em;
+            font-weight: bold;
+            color: #64b5f6;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            text-shadow: 0 0 10px rgba(100, 181, 246, 0.8);
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-80px) scale(1.5);
+            }
+        }
+
+        .info-text {
+            color: #90caf9;
+            font-size: 1.1em;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .dps-display {
+            color: #4ade80;
+            font-size: 1.2em;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .building {
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid #4a90e2;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        .building:hover:not(.disabled) {
+            background: rgba(100, 181, 246, 0.2);
+            border-color: #64b5f6;
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.4);
+        }
+
+        .building.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .building-name {
+            font-weight: bold;
+            color: #64b5f6;
+            margin-bottom: 5px;
+        }
+
+        .building-cost {
+            color: #90caf9;
+            font-size: 0.85em;
+        }
+
+        .building-effect {
+            color: #4ade80;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .building-owned {
+            display: inline-block;
+            background: #4a90e2;
+            color: #e0e0e0;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.8em;
+            margin-left: 8px;
+        }
+
+        .special-event {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: #ffc107;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .special-event:hover {
+            background: rgba(255, 193, 7, 0.3);
+            transform: scale(1.02);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 193, 7, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.6); }
+        }
+
+        .special-event-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .upgrade {
+            background: rgba(74, 144, 226, 0.15);
+            border: 1px solid #4a90e2;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+        }
+
+        .upgrade:hover:not(.disabled) {
+            background: rgba(100, 181, 246, 0.25);
+            border-color: #64b5f6;
+        }
+
+        .upgrade.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .upgrade.purchased {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            color: #90caf9;
+            margin-bottom: 3px;
+        }
+
+        .upgrade-cost {
+            color: #90caf9;
+            font-size: 0.8em;
+        }
+
+        .transcend-section {
+            background: rgba(156, 39, 176, 0.1);
+            border: 2px solid #9c27b0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .transcend-button {
+            background: linear-gradient(135deg, #9c27b0 0%, #6a1b9a 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+
+        .transcend-button:hover {
+            background: linear-gradient(135deg, #b030cc 0%, #7b1fa2 100%);
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.6);
+            transform: scale(1.02);
+        }
+
+        .transcend-button.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .achievement {
+            background: rgba(255, 193, 7, 0.15);
+            border-left: 3px solid #ffc107;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #ffc107;
+        }
+
+        .achievement.locked {
+            opacity: 0.3;
+            border-left-color: #666;
+            color: #999;
+        }
+
+        .scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(74, 144, 226, 0.1);
+            border-radius: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #4a90e2;
+            border-radius: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #64b5f6;
+        }
+
+        .reset-button {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background: linear-gradient(135deg, #ef5350 0%, #e53935 100%);
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+        }
+
+        .prestige-info {
+            color: #9c27b0;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #4a90e2;
+        }
+
+        .tab-button {
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid #4a90e2;
+            color: #90caf9;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .tab-button:hover {
+            background: rgba(100, 181, 246, 0.2);
+        }
+
+        .leaderboard-entry {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .leaderboard-entry.you {
+            background: rgba(76, 175, 80, 0.15);
+            border-color: #4ade80;
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #ffc107;
+            min-width: 30px;
+        }
+
+        .leaderboard-entry.you .leaderboard-rank {
+            color: #4ade80;
+        }
+
+        .leaderboard-info {
+            flex: 1;
+            margin: 0 10px;
+        }
+
+        .leaderboard-name {
+            font-weight: bold;
+            color: #64b5f6;
+            margin-bottom: 3px;
+        }
+
+        .leaderboard-score {
+            color: #90caf9;
+            font-size: 0.85em;
+        }
+
+        .player-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .player-input input {
+            flex: 1;
+            padding: 8px;
+            background: rgba(74, 144, 226, 0.1);
+            border: 1px solid #4a90e2;
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        .player-input input:focus {
+            outline: none;
+            border-color: #64b5f6;
+            box-shadow: 0 0 10px rgba(100, 181, 246, 0.3);
+        }
+
+        .player-input button {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .player-input button:hover {
+            background: #64b5f6;
+        }
+
+        .leaderboard-filter {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: #ffc107;
+            color: #1a1a2e;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 193, 7, 0.2);
+        }
+
+        /* Chat Styles */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: rgba(10, 10, 20, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: auto;
+            max-height: 300px;
+            border: 1px solid #4ade80;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(74, 180, 128, 0.1);
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #4ade80;
+            border-radius: 3px;
+        }
+
+        .chat-message {
+            background: rgba(74, 180, 128, 0.1);
+            border-left: 3px solid #4ade80;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .chat-message.system {
+            background: rgba(100, 181, 246, 0.1);
+            border-left-color: #64b5f6;
+            color: #64b5f6;
+            font-style: italic;
+        }
+
+        .chat-author {
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 3px;
+        }
+
+        .chat-text {
+            color: #e0e0e0;
+            word-break: break-word;
+        }
+
+        .chat-time {
+            font-size: 0.75em;
+            color: #90caf9;
+            margin-top: 3px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .chat-input-container input {
+            flex: 1;
+            padding: 8px;
+            background: rgba(74, 180, 128, 0.1);
+            border: 1px solid #4ade80;
+            border-radius: 5px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+        }
+
+        .chat-input-container input:focus {
+            outline: none;
+            border-color: #90caf9;
+            box-shadow: 0 0 10px rgba(74, 180, 128, 0.3);
+        }
+
+        .chat-input-container button {
+            background: #4ade80;
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .chat-input-container button:hover {
+            background: #90caf9;
+        }
+
+        .email-settings {
+            background: rgba(156, 39, 176, 0.1);
+            border: 1px solid #9c27b0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+        }
+
+        .email-input {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .email-input input {
+            flex: 1;
+            padding: 6px;
+            background: rgba(156, 39, 176, 0.1);
+            border: 1px solid #9c27b0;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            min-width: 150px;
+        }
+
+        .email-input input:focus {
+            outline: none;
+            border-color: #b030cc;
+        }
+
+        .email-input button {
+            background: #9c27b0;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .email-input button:hover {
+            background: #b030cc;
+        }
+
+        .email-status {
+            color: #9c27b0;
+            font-size: 0.8em;
+        }
+
+        .email-status.verified {
+            color: #4ade80;
+        }
+
+        @media (max-width: 1400px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .leaderboard-section {
+                grid-template-columns: repeat(2, 1fr);
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .diamond-button {
+                width: 150px;
+                height: 150px;
+                font-size: 3em;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .leaderboard-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Main Game Area -->
+        <div class="game-section">
+            <h1>💎 Diamond Clicker</h1>
+
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-label">Diamonds</div>
+                    <div class="stat-value" id="diamondCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Prestige Points</div>
+                    <div class="stat-value" id="prestigeCount">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Multiplier</div>
+                    <div class="stat-value" id="multiplierValue">1x</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Click Power</div>
+                    <div class="stat-value" id="clickPowerValue">1</div>
+                </div>
+            </div>
+
+            <div class="clicker-area">
+                <button class="diamond-button" id="diamondButton" onclick="clickDiamond()">💎</button>
+                <div class="info-text" id="clickAmount">+1</div>
+                <div class="dps-display" id="dpsDisplay">Diamonds per second: 0</div>
+            </div>
+
+            <div id="specialEventContainer"></div>
+
+            <h2>🏭 Buildings</h2>
+            <div class="scroll-container" id="buildingsContainer"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Upgrades -->
+            <div class="sidebar-card">
+                <h2>⚡ Upgrades</h2>
+                <div class="tabs" id="upgradeTabs"></div>
+                <div class="scroll-container" id="upgradesContainer"></div>
+            </div>
+
+            <!-- Prestige/Transcend -->
+            <div class="sidebar-card">
+                <h2>✨ Transcendence</h2>
+                <div class="prestige-info" id="prestigeInfo">
+                    Transcend to reset your progress but keep prestige points for permanent multipliers!
+                </div>
+                <div class="transcend-section">
+                    <div id="transcendReward">You will gain: 0 prestige points</div>
+                    <button class="transcend-button" id="transcendButton" onclick="transcend()">Transcend Now</button>
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="sidebar-card">
+                <h2>🏆 Achievements</h2>
+                <div class="scroll-container" id="achievementsContainer"></div>
+            </div>
+
+            <button class="reset-button" onclick="resetAllData()">🔄 Full Reset</button>
+        </div>
+
+        <!-- Leaderboard & Chat Section -->
+        <div class="leaderboard-section">
+            <!-- Global Leaderboard -->
+            <div class="leaderboard-card">
+                <h2>🏆 Global Leaderboard</h2>
+
+                <div class="player-input">
+                    <input type="text" id="playerNameInput" placeholder="Enter your name..." maxlength="20">
+                    <button onclick="setPlayerName()">Set Name</button>
+                </div>
+
+                <div class="leaderboard-filter">
+                    <button class="filter-btn active" onclick="filterLeaderboard('diamonds')">💎 Diamonds</button>
+                    <button class="filter-btn" onclick="filterLeaderboard('prestige')">✨ Prestige</button>
+                    <button class="filter-btn" onclick="filterLeaderboard('buildings')">🏭 Buildings</button>
+                </div>
+
+                <div class="scroll-container" id="leaderboardContainer"></div>
+            </div>
+
+            <!-- Chat -->
+            <div class="chat-card">
+                <h2>💬 Global Chat</h2>
+
+                <div class="email-settings">
+                    <div style="margin-bottom: 8px; color: #9c27b0;">📧 Email (Optional)</div>
+                    <div class="email-input">
+                        <input type="email" id="emailInput" placeholder="your@email.com" maxlength="50">
+                        <button onclick="setEmail()">Add Email</button>
+                    </div>
+                    <div class="email-status" id="emailStatus">No email set</div>
+                </div>
+
+                <div class="chat-container">
+                    <div class="chat-messages" id="chatMessages"></div>
+                    
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="Say something..." maxlength="100" onkeypress="handleChatKeypress(event)">
+                        <button onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="leaderboard-card">
+                <h2>📊 Your Stats</h2>
+                <div class="scroll-container">
+                    <div class="stat-box" style="text-align: left; margin-bottom: 10px;">
+                        <div class="stat-label">Player Name</div>
+                        <div class="stat-value" id="playerNameDisplay" style="font-size: 1.2em; color: #90caf9;">Anonymous</div>
+                    </div>
+
+                    <div class="stat-box" style="text-align: left; margin-bottom: 10px;">
+                        <div class="stat-label">Total Diamonds Earned</div>
+                        <div class="stat-value" id="totalEarned" style="font-size: 1.2em; color: #90caf9;">0</div>
+                    </div>
+
+                    <div class="stat-box" style="text-align: left; margin-bottom: 10px;">
+                        <div class="stat-label">Total Clicks</div>
+                        <div class="stat-value" id="totalClicks" style="font-size: 1.2em; color: #90caf9;">0</div>
+                    </div>
+
+                    <div class="stat-box" style="text-align: left; margin-bottom: 10px;">
+                        <div class="stat-label">Buildings Owned</div>
+                        <div class="stat-value" id="buildingsOwnedStat" style="font-size: 1.2em; color: #90caf9;">0</div>
+                    </div>
+
+                    <div class="stat-box" style="text-align: left; margin-bottom: 10px;">
+                        <div class="stat-label">Upgrades Purchased</div>
+                        <div class="stat-value" id="upgradesPurchasedStat" style="font-size: 1.2em; color: #90caf9;">0</div>
+                    </div>
+
+                    <div class="stat-box" style="text-align: left; margin-bottom: 10px;">
+                        <div class="stat-label">Special Events Clicked</div>
+                        <div class="stat-value" id="specialEventsClicledStat" style="font-size: 1.2em; color: #90caf9;">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            diamonds: 0,
+            prestigePoints: 0,
+            totalDiamondsEarned: 0,
+            clickPower: 1,
+            diamondsPerSecond: 0,
+            multiplier: 1,
+            lastClickTime: 0,
+            specialEventActive: false,
+            specialEventMultiplier: 1,
+            clicksPerformed: 0,
+            specialEventsClicked: 0,
+            buildingsOwned: 0,
+            playerName: 'Anonymous',
+            email: '',
+            emailVerified: false
+        };
+
+        // Buildings
+        const buildings = [
+            { id: 'miner', name: '⛏️ Miner', baseCost: 10, baseProduction: 0.1, owned: 0 },
+            { id: 'drill', name: '🔧 Drill', baseCost: 100, baseProduction: 1, owned: 0 },
+            { id: 'excavator', name: '🚜 Excavator', baseCost: 1000, baseProduction: 10, owned: 0 },
+            { id: 'factory', name: '🏭 Factory', baseCost: 10000, baseProduction: 100, owned: 0 },
+            { id: 'ai', name: '🤖 AI Mine', baseCost: 100000, baseProduction: 1000, owned: 0 },
+            { id: 'quantum', name: '⚛️ Quantum Extractor', baseCost: 1000000, baseProduction: 10000, owned: 0 },
+            { id: 'cosmic', name: '🌌 Cosmic Harvester', baseCost: 10000000, baseProduction: 100000, owned: 0 },
+            { id: 'dimensional', name: '🌀 Dimensional Rift', baseCost: 100000000, baseProduction: 1000000, owned: 0 },
+        ];
+
+        // Upgrades by category
+        const upgrades = [
+            // Click Upgrades
+            { id: 'click1', name: 'Sharper Pick', cost: 100, effect: 1, type: 'click', purchased: false, category: 'Click Power' },
+            { id: 'click2', name: 'Diamond Hands', cost: 500, effect: 2, type: 'click', purchased: false, category: 'Click Power' },
+            { id: 'click3', name: 'Power Gloves', cost: 5000, effect: 5, type: 'click', purchased: false, category: 'Click Power' },
+            { id: 'click4', name: 'Reinforced Grip', cost: 50000, effect: 10, type: 'click', purchased: false, category: 'Click Power' },
+            { id: 'click5', name: 'Cyber Enhancement', cost: 500000, effect: 25, type: 'click', purchased: false, category: 'Click Power' },
+            { id: 'click6', name: 'Dimensional Touch', cost: 5000000, effect: 100, type: 'click', purchased: false, category: 'Click Power' },
+            
+            // Miner Upgrades
+            { id: 'miner1', name: 'Miner Training', cost: 150, effect: 1.2, type: 'miner', purchased: false, category: 'Miner' },
+            { id: 'miner2', name: 'Better Picks', cost: 1500, effect: 1.5, type: 'miner', purchased: false, category: 'Miner' },
+            { id: 'miner3', name: 'Professional Miners', cost: 15000, effect: 2, type: 'miner', purchased: false, category: 'Miner' },
+            { id: 'miner4', name: 'Legendary Miners', cost: 150000, effect: 2.5, type: 'miner', purchased: false, category: 'Miner' },
+            
+            // Factory Upgrades
+            { id: 'factory1', name: 'Mass Production', cost: 15000, effect: 2, type: 'factory', purchased: false, category: 'Factory' },
+            { id: 'factory2', name: 'Automation System', cost: 150000, effect: 2.5, type: 'factory', purchased: false, category: 'Factory' },
+            { id: 'factory3', name: 'Quantum Assembly', cost: 1500000, effect: 3.5, type: 'factory', purchased: false, category: 'Factory' },
+            
+            // General Production
+            { id: 'general1', name: 'Efficiency Boost', cost: 50000, effect: 1.5, type: 'all', purchased: false, category: 'General' },
+            { id: 'general2', name: 'Advanced Materials', cost: 500000, effect: 2, type: 'all', purchased: false, category: 'General' },
+            { id: 'general3', name: 'Quantum Tech', cost: 5000000, effect: 3, type: 'all', purchased: false, category: 'General' },
+            { id: 'general4', name: 'Interdimensional Access', cost: 50000000, effect: 5, type: 'all', purchased: false, category: 'General' },
+            
+            // Passive Income
+            { id: 'passive1', name: 'Diamond Crate', cost: 50000, effect: 1.5, type: 'passive', purchased: false, category: 'Passive' },
+            { id: 'passive2', name: 'Storage Optimization', cost: 500000, effect: 2, type: 'passive', purchased: false, category: 'Passive' },
+        ];
+
+        // Achievements
+        const achievements = [
+            { id: 'first', name: '🌟 First Step', description: 'Earn your first diamond', condition: () => gameState.diamonds >= 1 },
+            { id: 'ten', name: '👶 Baby Steps', description: 'Earn 10 diamonds', condition: () => gameState.totalDiamondsEarned >= 10 },
+            { id: 'hundred', name: '💯 Century', description: 'Earn 100 diamonds', condition: () => gameState.totalDiamondsEarned >= 100 },
+            { id: 'thousand', name: '🎯 Thousand', description: 'Earn 1,000 diamonds', condition: () => gameState.totalDiamondsEarned >= 1000 },
+            { id: 'tenk', name: '💰 Riches', description: 'Earn 10,000 diamonds', condition: () => gameState.totalDiamondsEarned >= 10000 },
+            { id: 'hundredk', name: '🤑 Wealthy', description: 'Earn 100,000 diamonds', condition: () => gameState.totalDiamondsEarned >= 100000 },
+            { id: 'million', name: '💎 Millionaire', description: 'Earn 1,000,000 diamonds', condition: () => gameState.totalDiamondsEarned >= 1000000 },
+            { id: 'billion', name: '🚀 Billionaire', description: 'Earn 1,000,000,000 diamonds', condition: () => gameState.totalDiamondsEarned >= 1000000000 },
+            { id: 'trillion', name: '🌌 Trillionaire', description: 'Earn 1,000,000,000,000 diamonds', condition: () => gameState.totalDiamondsEarned >= 1000000000000 },
+            
+            { id: 'first-building', name: '🏗️ Builder', description: 'Buy your first building', condition: () => buildings.some(b => b.owned > 0) },
+            { id: 'five-buildings', name: '🏢 Contractor', description: 'Buy 5 different buildings', condition: () => buildings.filter(b => b.owned > 0).length >= 5 },
+            { id: 'all-buildings', name: '🌆 Metropolis', description: 'Buy all buildings', condition: () => buildings.filter(b => b.owned > 0).length === buildings.length },
+            { id: 'ten-owned', name: '📈 Growing', description: 'Own 10 total buildings', condition: () => buildings.reduce((sum, b) => sum + b.owned, 0) >= 10 },
+            { id: 'hundred-owned', name: '🏭 Industrial', description: 'Own 100 total buildings', condition: () => buildings.reduce((sum, b) => sum + b.owned, 0) >= 100 },
+            { id: 'thousand-owned', name: '🌍 Dominion', description: 'Own 1,000 total buildings', condition: () => buildings.reduce((sum, b) => sum + b.owned, 0) >= 1000 },
+            
+            { id: 'first-upgrade', name: '⚡ Enhanced', description: 'Buy your first upgrade', condition: () => upgrades.some(u => u.purchased) },
+            { id: 'five-upgrades', name: '⚙️ Advanced Tech', description: 'Buy 5 upgrades', condition: () => upgrades.filter(u => u.purchased).length >= 5 },
+            { id: 'ten-upgrades', name: '🔮 Tech Master', description: 'Buy 10 upgrades', condition: () => upgrades.filter(u => u.purchased).length >= 10 },
+            { id: 'all-upgrades', name: '🌟 Ultimate Power', description: 'Buy all upgrades', condition: () => upgrades.filter(u => u.purchased).length === upgrades.length },
+            
+            { id: 'ten-clicks', name: '🖱️ Clicker', description: 'Make 10 clicks', condition: () => gameState.clicksPerformed >= 10 },
+            { id: 'hundred-clicks', name: '⚡ Rapid Fire', description: 'Make 100 clicks', condition: () => gameState.clicksPerformed >= 100 },
+            { id: 'thousand-clicks', name: '🎮 Speedrunner', description: 'Make 1,000 clicks', condition: () => gameState.clicksPerformed >= 1000 },
+            { id: 'tenk-clicks', name: '💪 Muscle Memory', description: 'Make 10,000 clicks', condition: () => gameState.clicksPerformed >= 10000 },
+            
+            { id: 'prestige', name: '✨ First Ascension', description: 'Transcend once', condition: () => gameState.prestigePoints > 0 },
+            { id: 'prestige-5', name: '💫 Enlightened', description: 'Reach 5 prestige points', condition: () => gameState.prestigePoints >= 5 },
+            { id: 'prestige-25', name: '🌠 Transcendent', description: 'Reach 25 prestige points', condition: () => gameState.prestigePoints >= 25 },
+            { id: 'prestige-100', name: '👑 Divine', description: 'Reach 100 prestige points', condition: () => gameState.prestigePoints >= 100 },
+            
+            { id: 'special', name: '🎲 Lucky Strike', description: 'Click a lucky diamond event', condition: () => gameState.specialEventsClicked > 0 },
+            { id: 'special-5', name: '🍀 Fortune Seeker', description: 'Click 5 lucky diamond events', condition: () => gameState.specialEventsClicked >= 5 },
+            { id: 'special-25', name: '⭐ Luckiest', description: 'Click 25 lucky diamond events', condition: () => gameState.specialEventsClicked >= 25 },
+        ];
+
+        let earnedAchievements = [];
+        let currentUpgradeFilter = 'All';
+        let leaderboardFilter = 'diamonds';
+        let leaderboardData = [];
+        let chatMessages = [];
+
+        // Email Functions
+        function setEmail() {
+            const email = document.getElementById('emailInput').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!email) {
+                document.getElementById('emailStatus').textContent = 'No email set';
+                document.getElementById('emailStatus').classList.remove('verified');
+                gameState.email = '';
+                gameState.emailVerified = false;
+                return;
+            }
+
+            if (!emailRegex.test(email)) {
+                document.getElementById('emailStatus').textContent = '❌ Invalid email format';
+                return;
+            }
+
+            gameState.email = email;
+            gameState.emailVerified = true;
+            document.getElementById('emailStatus').textContent = '✓ Email verified: ' + email;
+            document.getElementById('emailStatus').classList.add('verified');
+            document.getElementById('emailInput').value = email;
+
+            // Store email in localStorage
+            localStorage.setItem('diamondClickerEmail', JSON.stringify({
+                email: email,
+                addedDate: new Date().toISOString()
+            }));
+        }
+
+        // Chat Functions
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+            if (gameState.playerName === 'Anonymous') {
+                alert('Please set your name first!');
+                return;
+            }
+
+            const chatMessage = {
+                author: gameState.playerName,
+                email: gameState.emailVerified ? gameState.email : null,
+                message: message,
+                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            chatMessages.push(chatMessage);
+            
+            // Keep only last 50 messages
+            if (chatMessages.length > 50) {
+                chatMessages.shift();
+            }
+
+            input.value = '';
+            renderChat();
+            
+            // Auto-scroll to bottom
+            const chatContainer = document.getElementById('chatMessages');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Save to localStorage
+            localStorage.setItem('diamondClickerChat', JSON.stringify(chatMessages));
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function renderChat() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = '';
+
+            chatMessages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'chat-message';
+                
+                div.innerHTML = `
+                    <div class="chat-author">${msg.author} ${msg.email ? '📧' : ''}</div>
+                    <div class="chat-text">${escapeHtml(msg.message)}</div>
+                    <div class="chat-time">${msg.timestamp}</div>
+                `;
+
+                container.appendChild(div);
+            });
+
+            // Show system message if no messages
+            if (chatMessages.length === 0) {
+                const div = document.createElement('div');
+                div.className = 'chat-message system';
+                div.innerHTML = '<div class="chat-text">No messages yet. Be the first to chat!</div>';
+                container.appendChild(div);
+            }
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // Leaderboard Functions
+        function setPlayerName() {
+            const name = document.getElementById('playerNameInput').value.trim();
+            if (name) {
+                gameState.playerName = name;
+                document.getElementById('playerNameDisplay').textContent = name;
+                updateLeaderboard();
+                addChatSystemMessage(`${name} joined the game!`);
+            }
+        }
+
+        function addChatSystemMessage(text) {
+            const chatMessage = {
+                author: 'SYSTEM',
+                message: text,
+                timestamp: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                isSystem: true
+            };
+            chatMessages.push(chatMessage);
+            if (chatMessages.length > 50) {
+                chatMessages.shift();
+            }
+            renderChat();
+        }
+
+        function updateLeaderboard() {
+            let saved = localStorage.getItem('diamondClickerLeaderboard');
+            leaderboardData = saved ? JSON.parse(saved) : [];
+
+            let playerIndex = leaderboardData.findIndex(p => p.name === gameState.playerName);
+            
+            if (playerIndex !== -1) {
+                if (gameState.totalDiamondsEarned > leaderboardData[playerIndex].score) {
+                    leaderboardData[playerIndex] = {
+                        name: gameState.playerName,
+                        score: gameState.totalDiamondsEarned,
+                        prestige: gameState.prestigePoints,
+                        buildings: buildings.reduce((sum, b) => sum + b.owned, 0),
+                        email: gameState.emailVerified ? gameState.email : null,
+                        date: new Date().toLocaleString()
+                    };
+                }
+            } else {
+                leaderboardData.push({
+                    name: gameState.playerName,
+                    score: gameState.totalDiamondsEarned,
+                    prestige: gameState.prestigePoints,
+                    buildings: buildings.reduce((sum, b) => sum + b.owned, 0),
+                    email: gameState.emailVerified ? gameState.email : null,
+                    date: new Date().toLocaleString()
+                });
+            }
+
+            localStorage.setItem('diamondClickerLeaderboard', JSON.stringify(leaderboardData));
+            renderLeaderboard();
+        }
+
+        function filterLeaderboard(type) {
+            leaderboardFilter = type;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboardContainer');
+            container.innerHTML = '';
+
+            let sorted = [...leaderboardData];
+            if (leaderboardFilter === 'diamonds') {
+                sorted.sort((a, b) => b.score - a.score);
+            } else if (leaderboardFilter === 'prestige') {
+                sorted.sort((a, b) => b.prestige - a.prestige);
+            } else if (leaderboardFilter === 'buildings') {
+                sorted.sort((a, b) => b.buildings - a.buildings);
+            }
+
+            sorted.slice(0, 10).forEach((player, index) => {
+                const isCurrentPlayer = player.name === gameState.playerName;
+                const div = document.createElement('div');
+                div.className = `leaderboard-entry ${isCurrentPlayer ? 'you' : ''}`;
+
+                let score = '';
+                if (leaderboardFilter === 'diamonds') {
+                    score = formatNumber(player.score) + ' 💎';
+                } else if (leaderboardFilter === 'prestige') {
+                    score = player.prestige + ' ✨';
+                } else if (leaderboardFilter === 'buildings') {
+                    score = player.buildings + ' 🏭';
+                }
+
+                div.innerHTML = `
+                    <div class="leaderboard-rank">#${index + 1}</div>
+                    <div class="leaderboard-info">
+                        <div class="leaderboard-name">${player.name} ${player.email ? '📧' : ''} ${isCurrentPlayer ? '👈 YOU' : ''}</div>
+                        <div class="leaderboard-score">${score}</div>
+                    </div>
+                `;
+
+                container.appendChild(div);
+            });
+
+            if (leaderboardData.length === 0) {
+                const div = document.createElement('div');
+                div.style.textAlign = 'center';
+                div.style.color = '#90caf9';
+                div.style.padding = '20px';
+                div.innerHTML = 'No leaderboard data yet. Set your name to join!';
+                container.appendChild(div);
+            }
+        }
+
+        // Utility Functions
+        function formatNumber(num) {
+            if (num >= 1e15) return (num / 1e15).toFixed(2) + 'Q';
+            if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+            return Math.floor(num).toString();
+        }
+
+        function getPrestigeReward() {
+            return Math.floor(Math.sqrt(gameState.totalDiamondsEarned / 1e6));
+        }
+
+        function getBuildingCost(building) {
+            return Math.floor(building.baseCost * Math.pow(1.15, building.owned));
+        }
+
+        function getClickPower() {
+            let power = 1 + gameState.clickPower;
+            upgrades.forEach(u => {
+                if (u.type === 'click' && u.purchased) {
+                    power += u.effect;
+                }
+            });
+            return power;
+        }
+
+        function calculateDPS() {
+            let dps = 0;
+            buildings.forEach(building => {
+                let production = building.baseProduction * building.owned;
+                
+                upgrades.forEach(u => {
+                    if (u.purchased) {
+                        if (u.type === building.id.replace(/\d+/, '')) {
+                            production *= u.effect;
+                        }
+                        if (u.type === 'all') {
+                            production *= u.effect;
+                        }
+                        if (u.type === 'passive' && u.id === 'passive1') {
+                            production *= u.effect;
+                        }
+                    }
+                });
+                dps += production;
+            });
+            return dps * gameState.multiplier;
+        }
+
+        // Click Handler
+        function clickDiamond() {
+            const power = getClickPower();
+            gameState.diamonds += power;
+            gameState.totalDiamondsEarned += power;
+            gameState.clicksPerformed += 1;
+            updateDisplay();
+            createClickEffect(event, power);
+            checkAchievements();
+            updateLeaderboard();
+        }
+
+        function createClickEffect(e, amount) {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
+            effect.textContent = '+' + formatNumber(amount);
+            effect.style.left = (e.clientX || e.touches?.[0].clientX) + 'px';
+            effect.style.top = (e.clientY || e.touches?.[0].clientY) + 'px';
+            document.body.appendChild(effect);
+            setTimeout(() => effect.remove(), 1000);
+        }
+
+        // Building Functions
+        function buyBuilding(id) {
+            const building = buildings.find(b => b.id === id);
+            const cost = getBuildingCost(building);
+
+            if (gameState.diamonds >= cost) {
+                gameState.diamonds -= cost;
+                building.owned += 1;
+                gameState.buildingsOwned += 1;
+                gameState.diamondsPerSecond = calculateDPS();
+                updateDisplay();
+                renderBuildings();
+                checkAchievements();
+                updateLeaderboard();
+            }
+        }
+
+        function renderBuildings() {
+            const container = document.getElementById('buildingsContainer');
+            container.innerHTML = '';
+
+            buildings.forEach(building => {
+                const cost = getBuildingCost(building);
+                const canAfford = gameState.diamonds >= cost;
+                const div = document.createElement('div');
+                div.className = `building ${canAfford ? '' : 'disabled'}`;
+                div.onclick = () => buyBuilding(building.id);
+
+                div.innerHTML = `
+                    <div class="building-name">${building.name}</div>
+                    <div class="building-cost">Cost: ${formatNumber(cost)} 💎</div>
+                    <div class="building-effect">+${formatNumber(building.baseProduction)}/s each</div>
+                    ${building.owned > 0 ? `<span class="building-owned">×${building.owned}</span>` : ''}
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        // Upgrade Functions
+        function getUpgradeCategories() {
+            const categories = [...new Set(upgrades.map(u => u.category))];
+            return ['All', ...categories];
+        }
+
+        function renderUpgradeTabs() {
+            const container = document.getElementById('upgradeTabs');
+            container.innerHTML = '';
+            const categories = getUpgradeCategories();
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `tab-button ${cat === currentUpgradeFilter ? 'active' : ''}`;
+                btn.textContent = cat;
+                btn.onclick = () => {
+                    currentUpgradeFilter = cat;
+                    renderUpgradeTabs();
+                    renderUpgrades();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function buyUpgrade(id) {
+            const upgrade = upgrades.find(u => u.id === id);
+            if (!upgrade.purchased && gameState.diamonds >= upgrade.cost) {
+                gameState.diamonds -= upgrade.cost;
+                upgrade.purchased = true;
+                gameState.diamondsPerSecond = calculateDPS();
+                updateDisplay();
+                renderUpgrades();
+                checkAchievements();
+                updateLeaderboard();
+            }
+        }
+
+        function renderUpgrades() {
+            const container = document.getElementById('upgradesContainer');
+            container.innerHTML = '';
+
+            let filteredUpgrades = upgrades;
+            if (currentUpgradeFilter !== 'All') {
+                filteredUpgrades = upgrades.filter(u => u.category === currentUpgradeFilter);
+            }
+
+            filteredUpgrades.forEach(upgrade => {
+                const div = document.createElement('div');
+                div.className = `upgrade ${upgrade.purchased ? 'purchased' : gameState.diamonds >= upgrade.cost ? '' : 'disabled'}`;
+                div.onclick = () => buyUpgrade(upgrade.id);
+
+                div.innerHTML = `
+                    <div class="upgrade-name">${upgrade.name} ${upgrade.purchased ? '✓' : ''}</div>
+                    <div class="upgrade-cost">${upgrade.purchased ? 'Owned' : 'Cost: ' + formatNumber(upgrade.cost)}</div>
+                `;
+
+                container.appendChild(div);
+            });
+        }
+
+        // Special Events
+        function triggerSpecialEvent() {
+            if (!gameState.specialEventActive) {
+                gameState.specialEventActive = true;
+                gameState.specialEventMultiplier = Math.random() < 0.5 ? 2 : 7;
+                
+                const container = document.getElementById('specialEventContainer');
+                const event = document.createElement('div');
+                event.className = 'special-event';
+                event.innerHTML = `
+                    <div class="special-event-icon">✨</div>
+                    <div>Lucky Diamond! Click for ${gameState.specialEventMultiplier}x boost!</div>
+                `;
+                event.onclick = () => {
+                    gameState.diamonds += 50 * gameState.specialEventMultiplier;
+                    gameState.totalDiamondsEarned += 50 * gameState.specialEventMultiplier;
+                    gameState.specialEventsClicked += 1;
+                    gameState.specialEventActive = false;
+                    event.remove();
+                    updateDisplay();
+                    checkAchievements();
+                    updateLeaderboard();
+                };
+                container.appendChild(event);
+
+                setTimeout(() => {
+                    if (gameState.specialEventActive) {
+                        gameState.specialEventActive = false;
+                        event.remove();
+                    }
+                }, 8000);
+            }
+        }
+
+        // Prestige/Transcend
+        function transcend() {
+            const prestigeGain = getPrestigeReward();
+            if (prestigeGain > 0) {
+                gameState.prestigePoints += prestigeGain;
+                gameState.multiplier = 1 + (gameState.prestigePoints * 0.01);
+                
+                buildings.forEach(b => b.owned = 0);
+                upgrades.forEach(u => u.purchased = false);
+                gameState.diamonds = 0;
+                gameState.diamondsPerSecond = 0;
+                gameState.clickPower = 1;
+                gameState.buildingsOwned = 0;
+                
+                addChatSystemMessage(`${gameState.playerName} transcended to the next level!`);
+                
+                updateDisplay();
+                renderBuildings();
+                renderUpgrades();
+                checkAchievements();
+                updateLeaderboard();
+            }
+        }
+
+        // Achievement System
+        function checkAchievements() {
+            achievements.forEach(ach => {
+                if (!earnedAchievements.includes(ach.id) && ach.condition()) {
+                    earnedAchievements.push(ach.id);
+                    renderAchievements();
+                }
+            });
+        }
+
+        function renderAchievements() {
+            const container = document.getElementById('achievementsContainer');
+            container.innerHTML = '';
+
+            achievements.forEach(ach => {
+                const earned = earnedAchievements.includes(ach.id);
+                const div = document.createElement('div');
+                div.className = `achievement ${earned ? '' : 'locked'}`;
+                div.title = ach.description;
+                div.innerHTML = `${ach.name}`;
+                container.appendChild(div);
+            });
+        }
+
+        // Update Display
+        function updateDisplay() {
+            gameState.diamondsPerSecond = calculateDPS();
+            
+            document.getElementById('diamondCount').textContent = formatNumber(gameState.diamonds);
+            document.getElementById('prestigeCount').textContent = gameState.prestigePoints;
+            document.getElementById('multiplierValue').textContent = gameState.multiplier.toFixed(2) + 'x';
+            document.getElementById('clickPowerValue').textContent = formatNumber(getClickPower());
+            document.getElementById('clickAmount').textContent = '+' + formatNumber(getClickPower());
+            document.getElementById('dpsDisplay').textContent = `Diamonds per second: ${formatNumber(gameState.diamondsPerSecond)}`;
+            
+            document.getElementById('transcendReward').textContent = `You will gain: ${getPrestigeReward()} prestige points`;
+            
+            const canTranscend = getPrestigeReward() > 0;
+            document.getElementById('transcendButton').classList.toggle('disabled', !canTranscend);
+
+            document.getElementById('totalEarned').textContent = formatNumber(gameState.totalDiamondsEarned);
+            document.getElementById('totalClicks').textContent = gameState.clicksPerformed;
+            document.getElementById('buildingsOwnedStat').textContent = buildings.reduce((sum, b) => sum + b.owned, 0);
+            document.getElementById('upgradesPurchasedStat').textContent = upgrades.filter(u => u.purchased).length;
+            document.getElementById('specialEventsClicledStat').textContent = gameState.specialEventsClicked;
+        }
+
+        // Reset Functions
+        function resetAllData() {
+            if (confirm('Reset ALL progress? This includes prestige points!')) {
+                gameState = {
+                    diamonds: 0,
+                    prestigePoints: 0,
+                    totalDiamondsEarned: 0,
+                    clickPower: 1,
+                    diamondsPerSecond: 0,
+                    multiplier: 1,
+                    lastClickTime: 0,
+                    specialEventActive: false,
+                    specialEventMultiplier: 1,
+                    clicksPerformed: 0,
+                    specialEventsClicked: 0,
+                    buildingsOwned: 0,
+                    playerName: 'Anonymous',
+                    email: '',
+                    emailVerified: false
+                };
+                buildings.forEach(b => b.owned = 0);
+                upgrades.forEach(u => u.purchased = false);
+                earnedAchievements = [];
+                document.getElementById('playerNameDisplay').textContent = 'Anonymous';
+                updateDisplay();
+                renderBuildings();
+                renderUpgrades();
+                renderAchievements();
+            }
+        }
+
+        // Game Loop
+        setInterval(() => {
+            gameState.diamonds += gameState.diamondsPerSecond / 10;
+            gameState.totalDiamondsEarned += gameState.diamondsPerSecond / 10;
+            updateDisplay();
+            checkAchievements();
+            updateLeaderboard();
+        }, 100);
+
+        // Trigger random special events
+        setInterval(() => {
+            if (Math.random() < 0.001) {
+                triggerSpecialEvent();
+            }
+        }, 1000);
+
+        // Initialize
+        window.addEventListener('load', () => {
+            renderUpgradeTabs();
+            renderBuildings();
+            renderUpgrades();
+            renderAchievements();
+            updateDisplay();
+            renderLeaderboard();
+            renderChat();
+
+            // Load email data
+            const savedEmail = localStorage.getItem('diamondClickerEmail');
+            if (savedEmail) {
+                const data = JSON.parse(savedEmail);
+                gameState.email = data.email;
+                gameState.emailVerified = true;
+                document.getElementById('emailInput').value = data.email;
+                document.getElementById('emailStatus').textContent = '✓ Email verified: ' + data.email;
+                document.getElementById('emailStatus').classList.add('verified');
+            }
+
+            // Load chat data
+            const savedChat = localStorage.getItem('diamondClickerChat');
+            if (savedChat) {
+                chatMessages = JSON.parse(savedChat);
+                renderChat();
+            }
+        });
+
+        // Save game data periodically
+        setInterval(() => {
+            localStorage.setItem('diamondClickerState', JSON.stringify({
+                gameState,
+                buildings,
+                upgrades,
+                earnedAchievements
+            }));
+        }, 5000);
+
+        // Load saved data
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('diamondClickerState');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.assign(gameState, data.gameState);
+                buildings.forEach((b, i) => Object.assign(b, data.buildings[i]));
+                upgrades.forEach((u, i) => Object.assign(u, data.upgrades[i]));
+                earnedAchievements = data.earnedAchievements;
+                document.getElementById('playerNameDisplay').textContent = gameState.playerName;
+            }
+        });
+    </script>
+</body>
+</html>

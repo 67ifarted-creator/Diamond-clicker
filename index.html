@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond Clicker</title>
+    <script>
+        // Actual game JavaScript code goes here.
+        // Please replace this comment with the actual game code.
+    <\/script>
+</head>
+<body>
+    <h1>Welcome to Diamond Clicker!</h1>
+    <p>Click the diamond to earn points!</p>
+    <button id="diamond">💎</button>
+    <script>
+        const diamondButton = document.getElementById('diamond');
+        let score = 0;
+
+        diamondButton.addEventListener('click', () => {
+            score++;
+            alert('Score: ' + score);
+        });
+    <\/script>
+</body>
+</html>
